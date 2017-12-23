@@ -18,12 +18,12 @@ from django.contrib import admin
 from register.views import Register
 from register.views import Log_In
 from register.views import Log_Out
-from register.views import index3
+from register.views import Dummy
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^register/',Register),
     url(r'^login/',Log_In),
     url(r'^logout/',Log_Out),
-    url(r'^shgj/',index3)
+    url(r'^dummy/',Dummy)
 ]

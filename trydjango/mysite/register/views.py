@@ -4,62 +4,61 @@ from django.http import HttpResponseRedirect
 import datetime
 from register.models import User_Password
 from django.core.urlresolvers import resolve
-#from register.models import User
-#from .forms import NameForm
-# def get_name(request):
-#     # if this is a POST request we need to process the form data
-#     if request.method == 'POST':
-#         # create a form instance and populate it with data from the request:
-#         form = NameForm(request.POST)
-#         # check whether it's valid:
-#         if form.is_valid():
-#             # process the data in form.cleaned_data as required
-#             # ...
-#             # redirect to a new URL:
-#             return HttpResponseRedirect('/thanks/')
-
-#     # if a GET (or any other method) we'll create a blank form
-#     else:
-#         form = NameForm()
-
+#import request
+##################################################################################################
 def Register(request):
-    
-    current_url = request.get_full_path()
-    content=current_url.split("/")
-    if "username" in content:
-        for i in range(len(content)):
-            if (content[i]=="username"):
-                username=content[i+1]
-            if (content[i]=="password"):
-                password=content[i+1]
-        tmp=[]
-        for i in User_Password.objects.all():
-            tmp.append(i.username)
-        if username not in tmp: 
-            a=User_Password.objects.create(username=username,password=password)
-            a.save()           
-    #return HttpResponse(current_url)
-    time=datetime.datetime.now()
-    return HttpResponse(str(time))
-
+    request.session.modified = True
+    info=request.GET.dict()
+    username=info["username"]
+    password=info["password"]
+    tmp=[]
+    for i in User_Password.objects.all():
+        tmp.append(i.username)
+    if username not in tmp: 
+        a=User_Password.objects.create(username=username,password=password)
+        a.save()           
+    return HttpResponse("Registration complete")
+###################################################################################################
 def Log_In(request):
-    current_url = request.get_full_path()
-    content=current_url.split("/")
-    f=True
-    if "username" in content:
-        for i in range(len(content)):
-            if (content[i]=="username"):
-                username=content[i+1]
-            if (content[i]=="password"):
-                password=content[i+1]
-        tmp={}
-        for i in User_Password.objects.all():
-            tmp[i.username]=i.password
-        if (username in tmp) and (tmp[username]==password):
-            return HttpResponseRedirect('/login/')
-    #if username not in tmp:
+    r=request.get_full_path()
+    info=request.GET.dict()
+    tmp={}
+    for i in User_Password.objects.all():
+        tmp[i.username]=i.password
+    if (info["username"] in tmp) and (tmp[info["username"]]==info["password"]):
+        request.session.set_expiry(999)
+        request.session["username"]=info["username"]
+        request.session.save()
+        request.session.modified = True
+        print(dict(request.session))
+        return HttpResponse("you are login")
     return HttpResponse("you coudn't login")
+    # def login(request):
+    #     if request.method != 'POST':
+    #     raise Http404('Only POSTs are allowed')
+    # try:
+    #     m = Member.objects.get(username=request.POST['username'])
+    #     if m.password == request.POST['password']:
+    #         request.session['member_id'] = m.id
+    #         return HttpResponseRedirect('/you-are-logged-in/')
+    # except Member.DoesNotExist:
+    #     return HttpResponse("Your username and password didn't match.")
+#######################################################################################################
 def Log_Out(request):
-    return HttpResponse("hello world2")
-def index3(request):
-    return HttpResponse("hello world3")
+    request.session.modified = True
+    # def logout(request):
+    #     try:
+    #     del request.session['member_id']
+    # except KeyError:
+    #     pass
+    # return HttpResponse("You're logged out.")
+    print(request.session["username"])
+    del request.session["username"]
+    return HttpResponse("you are logged out.")
+#######################################################################################################
+def Dummy(request):
+    print(dict(request.session))
+    if request.session.has_key("username"):   
+        return HttpResponse("This is your Dummy page armin")
+    #print(request.session["username"])
+    return HttpResponse("you are not login")
