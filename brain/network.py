@@ -30,6 +30,7 @@ def Log_out(session):
 #########################################################################
 def Register(session):
     #print(url.urls['register'])
+    os.system("clear")
     username = input("input your username: ").lower()
     password = input("input your password: ")
     if (len(username)==0 or len(password)==0):
@@ -37,8 +38,12 @@ def Register(session):
         Register(session)
     info = dict(username=username,password=password)
     r = session.get(url.urls['register'],params=info)
+    if "invalid" in str(r.content):
+        input("your registeration has a problem press any keys to show register again ...")
+        
+        Register(session)
     input("your registeration complete press any keys to show login menu ...")
-    loginmenu.menu()
+    loginmenu.menu(session)
 #########################################################################
 def Dummy(session):
     print(datetime.datetime.now())

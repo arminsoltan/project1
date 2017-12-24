@@ -14,10 +14,17 @@ def Register(request):
     tmp=[]
     for i in User_Password.objects.all():
         tmp.append(i.username)
+    print(tmp)
+    for i in info["username"]:
+        if (ord(i)<ord("a") or ord(i)>ord("z")):
+            return HttpResponse("invalid")
     if username not in tmp: 
         a=User_Password.objects.create(username=username,password=password)
-        a.save()           
-    return HttpResponse("Registration complete")
+        a.save()
+        request.session["username"]=username
+        request.session.save()           
+        return HttpResponse("Registration complete")
+    return HttpResponse("invalid")
 ###################################################################################################
 def Log_In(request):
     r=request.get_full_path()
@@ -59,6 +66,6 @@ def Log_Out(request):
 def Dummy(request):
     print(dict(request.session))
     if request.session.has_key("username"):   
-        return HttpResponse("This is your Dummy page armin")
+        return HttpResponse("This is your Dummy page  "+ str(request.session["username"])+"  welcome")
     #print(request.session["username"])
     return HttpResponse("you are not login")

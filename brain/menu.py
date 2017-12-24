@@ -16,7 +16,7 @@ def _show_menu():
     if (_is_valid(cmd)):
         return cmd
     else:
-        _show_menu()
+        init()
     #_run(message)
 ######################################
 def _run(message):
